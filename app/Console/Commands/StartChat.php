@@ -38,7 +38,7 @@ class StartChat extends Command
 
         info($response);
 
-        while ($question = text('Message ChatGPT...')) {
+        while ($question = text('Message ChatGPT...') ?? false) {
 
             $response = spin(fn () => $chat->send($question), 'Generating response...');
 

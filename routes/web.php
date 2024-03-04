@@ -16,16 +16,23 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
+    return view('roast');
+});
 
-    $chat = new Chat();
-    $response = $chat
-            ->systemMessage('You are a poetic assistant, skilled in explaining complex programming concepts with creative flair.')
-            ->send('Compose a poem that explains the concept of recursion in programming.');
-
-    $response = $chat->reply('Good but make it silly');
-
-    return view('welcome', [
-        'response' => $response
+Route::post('/roast', function () {
+    $attributes = request()->validate([
+        'topic' => 'required|string|min:2'
     ]);
 
+    $audio = (new Chat())->send(
+        message: "Please roast {$attributes['topic']} in a sarcastic tone.",
+        speech: true
+    );
+
+    file_put_contents(public_path($file = "/ai/".md5($audio).".mp3"), $audio);
+
+    return redirect('/')->with([
+       'file' => $file,
+        'flash' => 'Boom. Roasted!'
+    ]);
 });
